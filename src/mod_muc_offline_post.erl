@@ -1,4 +1,4 @@
--module(mod_hello_world).
+-module(mod_muc_offline_post).
 
 -behaviour(gen_mod).
 
@@ -36,6 +36,35 @@ stop(_Host) ->
     ejabberd_hooks:delete(muc_filter_message, _Host, ?MODULE, muc_filter_message, 10),
     ok.
 
-muc_filter_message(Stanza, MUCState, FromNick) ->
-    ?INFO_MSG("muc_filter_message!", []),
-    Stanza.
+muc_filter_message(#message{from = From, body = Body} = Pkt,
+		   #state{config = Config, jid = RoomJID} = MUCState,
+		   FromNick) ->
+
+    ?INFO_MSG("~p.", [From#jid.lserver]),
+
+    PostUrl = gen_mod:get_module_opt(From#jid.lserver, ?MODULE, post_url, fun(S) -> iolist_to_binary(S) end, list_to_binary("")),
+
+    LServer = RoomJID#jid.lserver,
+
+ %   from_user = binary_to_list(From#jid.luser),
+ %   room = binary_to_list(RoomJID#jid.luser),
+    BodyText = binary_to_list(xmpp:get_text(Body)),
+
+ %   dict:to_list(MUCState#state.users),
+
+    ?INFO_MSG("~p.", [LServer]),
+    ?INFO_MSG("~p.", [Pkt]),
+    ?INFO_MSG("~p.", [RoomJID#jid.luser]),
+    ?INFO_MSG("~p.", [From#jid.luser]),
+    ?INFO_MSG("~p.", [from_user]),
+    ?INFO_MSG("~p.", [BodyText]),
+    ?INFO_MSG("~p.", [binary_to_list(FromNick)]),
+    ?INFO_MSG("~p.", [PostUrl]),
+
+    FinalData = string:join(["{", "\"from\":", "\"", binary_to_list(FromNick), "\",", "\"room\":", "\"", binary_to_list(RoomJID#jid.luser), "\",", "\"body\":", "\"", BodyText, "\"",  "}"], ""),
+    ?INFO_MSG("~p.", [FinalData]),
+    Request = {atom_to_list(PostUrl), [], "application/json", FinalData},
+    httpc:request(post,  Request, [], [{sync, false}]),
+    %httpc:request(post,  {"https://localhost:443", [], [], "hello"}, [], []),
+    %httpc:request(post, Request, [],[]),
+    Pkt.

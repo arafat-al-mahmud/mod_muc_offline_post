@@ -1,5 +1,5 @@
 # edit this file to fit your needs
 
 modules:
-  mod_offline_post:
-    post_url: ""
+  mod_muc_offline_post:
+    post_url: https://localhost:443/api/chat/notifications/webhook
