@@ -61,7 +61,7 @@ muc_filter_message(#message{from = From, body = Body} = Pkt,
     ?INFO_MSG("~p.", [binary_to_list(FromNick)]),
     ?INFO_MSG("~p.", [PostUrl]),
 
-    FinalData = string:join(["{", "\"from\":", "\"", binary_to_list(FromNick), "\",", "\"room\":", "\"", binary_to_list(RoomJID#jid.luser), "\",", "\"body\":", "\"", BodyText, "\"",  "}"], ""),
+    FinalData = string:join(["{", "\"from\":", "\"", binary_to_list(FromNick), "\",", "\"room\":", "\"", binary_to_list(RoomJID#jid.luser), "\",", "\"body\":", BodyText, "}"], ""),
     ?INFO_MSG("~p.", [FinalData]),
     Request = {atom_to_list(PostUrl), [], "application/json", FinalData},
     httpc:request(post,  Request, [], [{sync, false}]),

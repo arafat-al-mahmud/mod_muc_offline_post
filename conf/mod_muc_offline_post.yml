@@ -2,4 +2,4 @@
 
 modules:
   mod_muc_offline_post:
-    post_url: https://localhost:443/api/chat/notifications/webhook
+    post_url: https://api-dev.sendhelper.com/api/chat/notifications/webhook
